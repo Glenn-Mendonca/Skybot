@@ -21,12 +21,14 @@ async def on_message(message):
   if message.author == client.user:
     return
 
-  if message.startswith('hey' or 'hello'):
+  if message.content.startswith('hey' or 'hello'):
     await message.channel.send('Hello Sir')
 
-  if message.startswith('inspire'):
+  if message.content.startswith('inspire'):
     await message.channel.send(get_quote)
 
 client.run(os.environ['token'])
+
+
 
 

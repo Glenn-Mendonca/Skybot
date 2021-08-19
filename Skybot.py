@@ -5,7 +5,7 @@ import json
 import random
 from dotenv import load_dotenv
 from discord.ext import commands
-from connect4.py import *
+from connect4 import *
 
 load_dotenv()
 bot=commands.Bot(command_prefix=",")
@@ -43,7 +43,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command()
-@has_permissions(kick_members=True)  
 async def clear(ctx,amount=2):
     await ctx.channel.purge(limit=amount)
 

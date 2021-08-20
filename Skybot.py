@@ -48,15 +48,8 @@ async def clear(ctx,amount=2):
 
 @bot.command(aliases=['p'])
 async def play(ctx,mem:discord.Member):
-    arr = [[':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:'],
-       [':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:'],
-       [':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:'],
-       [':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:'],
-       [':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:'],
-       [':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:',':black_large_square:']]
-
-    await ctx.send(intro(ctx.author,mem))
-    await ctx.send(drawGrid(arr))
-
+    if mem !=bot.user:
+        await intro(ctx,bot,ctx.author,mem)
+        await ctx.send(drawGrid(arr))
 
 bot.run(os.environ['token'])

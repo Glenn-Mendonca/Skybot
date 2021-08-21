@@ -10,6 +10,7 @@ from connect4 import *
 load_dotenv()
 bot=commands.Bot(command_prefix=",")
 
+
 f=open("help.txt","r")
 help=f.readlines()
 
@@ -49,7 +50,26 @@ async def clear(ctx,amount=2):
 @bot.command(aliases=['p'])
 async def play(ctx,mem:discord.Member):
     if mem !=bot.user:
-        await intro(ctx,bot,ctx.author,mem)
-        await ctx.send(drawGrid(arr))
+        count=42
+        await connect4game(ctx,bot,mem)
+        # await intro(ctx,bot,ctx.author,mem)
+        # board=discord.Embed(
+        #     title=f"Connect-4\n{ctx.author.name} vs {mem.name}",
+        #     description=f"{drawGrid(arr)}\n{players[count%2]}\'s chance."
+        #     )
+        # msg =await ctx.send(embed=board)
+
+        # await msg.add_reaction("1️⃣")
+        # await msg.add_reaction("2️⃣")
+        # await msg.add_reaction("3️⃣")
+        # await msg.add_reaction("4️⃣")
+        # await msg.add_reaction("5️⃣")
+        # await msg.add_reaction("6️⃣")
+        # await msg.add_reaction("7️⃣")
+
+        # move=await getMoves(ctx,bot) 
+        # print(move)      
+        # await ctx.channel.send(move)
+        # await insert(arr,move)
 
 bot.run(os.environ['token'])

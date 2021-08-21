@@ -1,13 +1,8 @@
 #-----------------GAME CODE-----------------#
 import discord
 
-count=42
 players=[]
-tok = ''
 token = []
-
-
-
 
 arr = [[':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
        [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
@@ -43,12 +38,11 @@ async def getChar(ctx,bot,p):
     reaction,user=await bot.wait_for("reaction_add",timeout=30, check=checkReact)
     users = await reaction.users().flatten()   
     if p in users:
-        return str(reaction)
-
+        print(reaction)
+        return str(reaction.emoji)
 
 def drawGrid(arr):
     current=''
-
     for x in range(6):
         for y in range(7):
             #if arr[x][y]==':white_large_square:':
@@ -60,19 +54,20 @@ def drawGrid(arr):
         current+="\n"
     return current
 
-async def getMoves(ctx,bot):
+async def getMoves(ctx,bot,count):
     def checker(reaction,user):
         return (user !=bot.user and (str(reaction.emoji)=="1️⃣" or str(reaction.emoji)=="2️⃣" or str(reaction.emoji)=="3️⃣" or str(reaction.emoji)=="4️⃣" or str(reaction.emoji)=="5️⃣" or str(reaction.emoji)=="6️⃣" or str(reaction.emoji)=="7️⃣"))
-    reaction,user=await bot.wait_for("reaction_add",timeout=30,check=checker)
-    if (str(reaction) in reactMoji) and user==players[count%2]:
+    reaction,user= await bot.wait_for("reaction_add",timeout=30,check=checker)
+    if ((str(reaction) in reactMoji) and user==players[count%2]):
         return int(reactMoji.index(str(reaction)))
 
 
-async def insert(arr,y,ctx):
-    print(type(y))
+async def insert(arr,y,ctx,tok,count):
+
     while(True):
         if(y<0 or y>6 or arr[0][y]!=':white_large_square:'):
-            ctx.channel.send('! Invalid Input !\n')
+            await ctx.channel.send('! Invalid Input !\n')
+            await getMoves(ctx,bot,count)
         else: 
             break
     col = 6
@@ -81,6 +76,7 @@ async def insert(arr,y,ctx):
             arr[col-1][y] = tok
             break
         col -= 1
+    print(arr)
 #---------------WINNING CHECKS----------------#
 def hCheck(tok):
     for i in range(6):
@@ -88,7 +84,7 @@ def hCheck(tok):
         for j in range(7):
             if(arr[i][j]==tok): count += 1
             else: count = 0
-            if(count==4): return tok
+            if(count==4): return 1
     return 0
 def vCheck(tok):
     for i in range(7):
@@ -96,7 +92,7 @@ def vCheck(tok):
         for j in range(6):
             if(arr[j][i]==tok): count += 1
             else: count = 0
-            if(count==4): return tok
+            if(count==4): return 1
     return 0
 def majdCheck(tok):
     for i in range(3):
@@ -106,9 +102,9 @@ def majdCheck(tok):
                 if(arr[i+len-1][j+len-1]==tok): count += 1
                 else: count = 0
                 len -= 1
-            if(count==4): return tok
+            if(count==4): return 1
     return 0
-def mindCheck(token):
+def mindCheck(tok):
     for i in range(3):
         for j in range(3,7):
             count,len = 0,4
@@ -116,7 +112,7 @@ def mindCheck(token):
                 if(arr[i+len-1][j-len+1]==tok): count += 1
                 else: count = 0
                 len -= 1
-            if(count==4): return tok
+            if(count==4): return 1
     return 0
 #---------------WINNING CHECKS----------------#
 
@@ -124,9 +120,7 @@ def mindCheck(token):
 async def connect4game(ctx,bot,mem):
     token = await intro(ctx,bot,ctx.author,mem)
     count = 42
-    tok=token[count%2]
     while(count):
-        print(count)
         tok = token[count%2]
 
         board=discord.Embed(
@@ -143,10 +137,9 @@ async def connect4game(ctx,bot,mem):
         await msg.add_reaction("6️⃣")
         await msg.add_reaction("7️⃣")
 
-        move=int(await getMoves(ctx,bot))
-        print(type(move))      
-        await insert(arr,move,ctx)
-        if(hCheck(token) or vCheck(token) or majdCheck(token) or mindCheck(token)):
+        move= await getMoves(ctx,bot,count)     
+        await insert(arr,move,ctx,tok,count)
+        if(hCheck(tok) or vCheck(tok) or majdCheck(tok) or mindCheck(tok)):
             if tok==token[0]:
                 board=discord.Embed(
                 title=f"Connect-4\n{ctx.author.name} vs {mem.name}",

@@ -4,13 +4,6 @@ import discord
 players=[]
 token = []
 
-arr = [[':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
-       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
-       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
-       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
-       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
-       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:']]
-
 reactMoji= ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
 
 async def intro(ctx,bot,p1,p2):
@@ -33,13 +26,10 @@ async def intro(ctx,bot,p1,p2):
 async def getChar(ctx,bot,p):
 
     def checkReact(reaction, user):
-        return user!=bot.user and str(reaction.emoji) != ':white_large_square:'
-
+        return user!=bot.user and str(reaction.emoji) != ':white_large_square:' and p==user
     reaction,user=await bot.wait_for("reaction_add",timeout=30, check=checkReact)
-    users = await reaction.users().flatten()   
-    if p in users:
-        print(reaction)
-        return str(reaction.emoji)
+    print(reaction)
+    return str(reaction)
 
 def drawGrid(arr):
     current=''
@@ -78,7 +68,7 @@ async def insert(arr,y,ctx,tok,count):
         col -= 1
     print(arr)
 #---------------WINNING CHECKS----------------#
-def hCheck(tok):
+def hCheck(tok,arr):
     for i in range(6):
         count = 0
         for j in range(7):
@@ -86,15 +76,17 @@ def hCheck(tok):
             else: count = 0
             if(count==4): return 1
     return 0
-def vCheck(tok):
+def vCheck(tok,arr):
     for i in range(7):
         count = 0
         for j in range(6):
             if(arr[j][i]==tok): count += 1
             else: count = 0
-            if(count==4): return 1
+            if(count==4):
+                print("You were right")
+                return 1
     return 0
-def majdCheck(tok):
+def majdCheck(tok,arr):
     for i in range(3):
         for j in range(4):
             count,len = 0,4
@@ -104,7 +96,7 @@ def majdCheck(tok):
                 len -= 1
             if(count==4): return 1
     return 0
-def mindCheck(tok):
+def mindCheck(tok,arr):
     for i in range(3):
         for j in range(3,7):
             count,len = 0,4
@@ -118,6 +110,12 @@ def mindCheck(tok):
 
 
 async def connect4game(ctx,bot,mem):
+    arr = [[':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
+       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
+       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
+       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
+       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:'],
+       [':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:',':white_large_square:']]
     token = await intro(ctx,bot,ctx.author,mem)
     count = 42
     while(count):
@@ -139,7 +137,7 @@ async def connect4game(ctx,bot,mem):
 
         move= await getMoves(ctx,bot,count)     
         await insert(arr,move,ctx,tok,count)
-        if(hCheck(tok) or vCheck(tok) or majdCheck(tok) or mindCheck(tok)):
+        if(hCheck(tok,arr) or vCheck(tok,arr) or majdCheck(tok,arr) or mindCheck(tok,arr)):
             if tok==token[0]:
                 board=discord.Embed(
                 title=f"Connect-4\n{ctx.author.name} vs {mem.name}",

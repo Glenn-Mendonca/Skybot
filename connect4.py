@@ -46,10 +46,9 @@ def drawGrid(arr):
 
 async def getMoves(ctx,bot,count):
     def checker(reaction,user):
-        return (user !=bot.user and (str(reaction.emoji)=="1️⃣" or str(reaction.emoji)=="2️⃣" or str(reaction.emoji)=="3️⃣" or str(reaction.emoji)=="4️⃣" or str(reaction.emoji)=="5️⃣" or str(reaction.emoji)=="6️⃣" or str(reaction.emoji)=="7️⃣"))
+        return (user !=bot.user and (str(reaction.emoji)=="1️⃣" or str(reaction.emoji)=="2️⃣" or str(reaction.emoji)=="3️⃣" or str(reaction.emoji)=="4️⃣" or str(reaction.emoji)=="5️⃣" or str(reaction.emoji)=="6️⃣" or str(reaction.emoji)=="7️⃣")) and  ((str(reaction) in reactMoji) and user==players[count%2])
     reaction,user= await bot.wait_for("reaction_add",timeout=30,check=checker)
-    if ((str(reaction) in reactMoji) and user==players[count%2]):
-        return int(reactMoji.index(str(reaction)))
+    return int(reactMoji.index(str(reaction)))
 
 
 async def insert(arr,y,ctx,tok,count):
@@ -74,7 +73,9 @@ def hCheck(tok,arr):
         for j in range(7):
             if(arr[i][j]==tok): count += 1
             else: count = 0
-            if(count==4): return 1
+            if(count==4):
+                print("Hcheck :sweat_smile:")
+                return 1
     return 0
 def vCheck(tok,arr):
     for i in range(7):
@@ -141,13 +142,19 @@ async def connect4game(ctx,bot,mem):
             if tok==token[0]:
                 board=discord.Embed(
                 title=f"Connect-4\n{ctx.author.name} vs {mem.name}",
-                description=f"{drawGrid(arr)}\n{players[0].name}has won the game."
+                description=f"{drawGrid(arr)}\n{players[0].name} has won the game."
                 )
+                msg =await ctx.send(embed=board)
+                break;
+
             if tok==token[1]:
                 board=discord.Embed(
                 title=f"Connect-4\n{ctx.author.name} vs {mem.name}",
-                description=f"{drawGrid(arr)}\n{players[1].name}has won the game."
+                description=f"{drawGrid(arr)}\n{players[1].name} has won the game."
                 )
+                msg =await ctx.send(embed=board)
+                break;
+
         count-=1
 
     if(count==0):

@@ -49,9 +49,9 @@ async def clear(ctx,amount=2):
 
 @bot.command(aliases=['p'])
 async def play(ctx,mem:discord.Member):
-    if mem !=bot.user:
-        count=42
-        await connect4game(ctx,bot,mem)
+    if (mem !=bot.user):
+        a = connect_4(ctx,bot,mem)
+        await a.connect4game()
         # await intro(ctx,bot,ctx.author,mem)
         # board=discord.Embed(
         #     title=f"Connect-4\n{ctx.author.name} vs {mem.name}",

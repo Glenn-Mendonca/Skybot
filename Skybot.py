@@ -8,13 +8,14 @@ from discord.ext import commands
 from connect4 import *
 
 load_dotenv()
-bot=commands.Bot(command_prefix=",")
+
+activity=discord.Game(name="Connect4 for fun")
+
+bot=commands.Bot(command_prefix=",", activity=activity, status=discord.Status.idle)
 
 
 f=open("help.txt","r")
 help=f.readlines()
-
-
 
 def get_quote():
     response=requests.get("https://zenquotes.io/api/random")

@@ -1,5 +1,6 @@
 #-----------------GAME CODE-----------------#
 import discord
+from gameFuncs import *
 
 class connect_4:
     reactMoji= ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
@@ -16,7 +17,7 @@ class connect_4:
                     [wb,wb,wb,wb,wb,wb,wb],
                     [wb,wb,wb,wb,wb,wb,wb],
                     [wb,wb,wb,wb,wb,wb,wb]] 
-
+        
     async def getChar(self,p):
         def checkReact(reaction, user):
             return user != self.bot.user and p==user and str(reaction.emoji) != ':white_large_square:'
@@ -30,18 +31,10 @@ class connect_4:
         )
         await self.ctx.channel.purge(limit=1)
         await self.ctx.send(embed=embed)
-        for i in range(2):
-            self.token.append(await self.getChar(self.players[i]))
+        self.token.append(await self.getChar(self.players[0]))
+        self.token.append(await self.getChar(self.players[1]))
         await self.ctx.channel.send(f"{self.players[0].name} {self.token[0]}\n{self.players[1].name} {self.token[1]}")
         return self.token
-
-    def drawGrid(self):
-        current=''
-        for x in range(6):
-            for y in range(7):
-                current += self.arr[x][y]
-            current+="\n"
-        return current
 
     async def getMoves(self):
         def checker(reaction,user):
@@ -63,53 +56,27 @@ class connect_4:
                 break
             col -= 1
 
-    def hCheck(self,tok):
-        for i in range(6):
-            count = 0
-            for j in range(7):
-                if(self.arr[i][j]==tok): count += 1
-                else: count = 0
-                if(count==4): return 1
-        return 0
-
-    def vCheck(self,tok):
-        for i in range(7):
-            count = 0
-            for j in range(6):
-                if(self.arr[j][i]==tok): count += 1
-                else: count = 0
-                if(count==4): return 1
-        return 0
-
-    def majdCheck(self,tok):
-        for i in range(3):
-            for j in range(4):
-                count,len = 0,4
-                while(len):
-                    if(self.arr[i+len-1][j+len-1]==tok): count += 1
-                    else: count = 0
-                    len -= 1
-                if(count==4): return 1
-        return 0
-
-    def mindCheck(self,tok):
-        for i in range(3):
-            for j in range(3,7):
-                count,len = 0,4
-                while(len):
-                    if(self.arr[i+len-1][j-len+1]==tok): count += 1
-                    else: count = 0
-                    len -= 1
-                if(count==4): return 1
-        return 0
+    
         
+
+    async def boardReset():
+        wb = ':white_large_square:'
+        self.arr = [[wb,wb,wb,wb,wb,wb,wb],
+                    [wb,wb,wb,wb,wb,wb,wb],
+                    [wb,wb,wb,wb,wb,wb,wb],
+                    [wb,wb,wb,wb,wb,wb,wb],
+                    [wb,wb,wb,wb,wb,wb,wb],
+                    [wb,wb,wb,wb,wb,wb,wb]] 
+        print("The object has been destroyed")
+
+
     async def connect4game(self):
-        self.token = await self.intro()
+        self.token =await self.intro()
         while(self.count):
             tok = self.token[self.count%2]
             board = discord.Embed(
                 title=f"Connect-4\n{self.players[0].name} vs {self.players[1].name}",
-                description=f"{self.drawGrid()}\n{self.players[self.count%2]}\'s chance."
+                description=f"{drawGrid(self.arr)}\n{self.players[self.count%2]}\'s chance."
                 )
             msg =await self.ctx.send(embed=board)
             await msg.add_reaction("1️⃣")
@@ -122,16 +89,18 @@ class connect_4:
 
             move= await self.getMoves()     
             await self.insert(move,tok)
-            if(self.hCheck(tok) or self.vCheck(tok) or self.majdCheck(tok) or self.mindCheck(tok)):
+            if(hCheck(self.arr, tok) or vCheck(self.arr, tok) or majdCheck(self.arr, tok) or mindCheck(self.arr, tok)):
                 board=discord.Embed(
                 title=f"Connect-4\n{self.players[0].name} vs {self.players[1].name}",
-                description=f"{self.drawGrid()}\n{self.players[self.token.index(tok)].name} has won the game."
+                description=f"{drawGrid(self.arr)}\n{self.players[self.token.index(tok)].name} has won the game."
                 )
                 msg = await self.ctx.send(embed = board)
+                await self.boardReset()
                 break
             self.count-=1
 
         if(self.count==0):
-            await self.ctx.channel.send('It was a Draw. LOL!\nBoth of you lost.\n')
+            await self.ctx.channel.send('It was a Draw. TIKTOK!\nBoth of you lost.\n')
+            await self.boardReset()
 
     #-----------------GAME CODE-----------------#

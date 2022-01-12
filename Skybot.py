@@ -30,16 +30,19 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+
+    caseless_message=(message.content).lower()
+
     if message.author==bot.user:
         return
 
-    if message.content.startswith("hey" or "hello") and message.author!=bot:
+    if caseless_message.startswith("hey" or "hello") and message.author!=bot:
         await message.channel.send('Hello Sir')
 
-    if message.content.startswith('inspire'):
+    if caseless_message.startswith('inspire'):
         await message.channel.send(get_quote())
 
-    if message.content.startswith('help'):
+    if caseless_message.startswith('help'):
         await message.channel.send(str(help[0]))
 
     await bot.process_commands(message)
